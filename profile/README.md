@@ -1,6 +1,6 @@
 # Stoganet
 
-Self-hosted media platform for a small private group. Jellyfin with a custom
+Self-hosted, private media platform. Jellyfin with a custom
 API layer, native Android TV client, and fully automated download pipeline —
 all running on a single home server with no open inbound ports.
 
@@ -13,6 +13,7 @@ all running on a single home server with no open inbound ports.
 | [`infra`](https://github.com/Stoganet/infra) | Home server: Docker Compose stack for Jellyfin, the \*arr automation suite, Jellyseerr, Traefik, and Portainer — deployed via GitHub Actions over a NetBird overlay. |
 | [`edge`](https://github.com/Stoganet/edge) | Public-facing VPS: Caddy TLS terminator and a self-hosted NetBird control plane. Bridges the public internet to the home box over a private WireGuard mesh. |
 | [`stogad`](https://github.com/Stoganet/stogad) | Native Rust daemon on the home server. File watcher and post-import guard for the media library (magic-byte validation, executable quarantine, junk cleanup). |
+| [`mcp`](https://github.com/Stoganet/mcp) | Go MCP server. Gives AI agents structured access to Docker, the \*arr stack, qBittorrent, and system health over streamable-http — deployed on the compose `internal` network, reachable by NetBird peers. |
 
 ## Architecture
 
@@ -32,9 +33,11 @@ flowchart TD
     Arr[(Sonarr / Radarr\nJellyseerr)]
     QB[(Download client\nVPN-tunneled)]
     Stogad[stogad\nRust daemon]
+    MCP[mcp-server\nAI ops tools]
   end
 
   Clients([Clients\nAndroid TV · mobile · web])
+  AI([AI agents\nOpenClaw · Claude])
   VPN([VPN provider])
 
   Internet --> Caddy
@@ -45,7 +48,11 @@ flowchart TD
   QB --> VPN
   Stogad -->|file watch + guard| JF
   NetBird -.->|mesh peers| Clients
+  NetBird -.->|mesh peers| AI
   Clients -->|HTTPS| Caddy
+  AI -->|streamable-http| MCP
+  MCP --> Arr
+  MCP --> QB
 ```
 
 Two hosts, one mesh. The home box joins the NetBird overlay as a peer — no
