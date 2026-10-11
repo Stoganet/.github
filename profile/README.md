@@ -10,6 +10,8 @@ Self-hosted, private media platform.
 | [`android-client`](https://github.com/Stoganet/android-client) | Kotlin, Compose | Android TV and phone apps. Talk only to `api-proxy`. |
 | [`mcp`](https://github.com/Stoganet/mcp) | Go | MCP server exposing ops tools to AI agents. |
 | [`opds-server`](https://github.com/Stoganet/opds-server) | Python | OPDS feed for ebook library. |
+| `infra` *(private)* | Ansible, OpenTofu, Docker Compose | Infrastructure as code: hosts, containers, private mesh and DNS. |
+| `stogad` *(private)* | Rust | Host daemon that keeps the media library clean. |
 
 ## Architecture
 
